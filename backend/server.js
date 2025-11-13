@@ -205,7 +205,7 @@ app.get('/api/requests', requireAuth, async (req, res) => {
 //   }
 // });
 
-// Novo endpoint simples para concluir solicitação
+// Endpoint simples para concluir solicitação
 app.post('/api/requests/:id/complete', requireAuth, async (req, res) => {
   try {
     const data = await readData();
@@ -230,7 +230,7 @@ app.patch('/api/requests/:id', requireAuth, async (req, res) => {
     if (idx === -1) return res.status(404).json({ mensagem: 'Solicitação não encontrada' });
 
     // Permite atualizar apenas um subconjunto seguro de campos
-    const allowed = ['name', 'phone', 'email', 'address', 'brand', 'model', 'problem', 'preferredTime', 'serviceId'];
+    const allowed = ['name', 'phone', 'email', 'address', 'brand', 'model', 'problem',];
     const item = data.requests[idx];
     for (const key of Object.keys(req.body || {})) {
       if (allowed.includes(key)) item[key] = req.body[key];
