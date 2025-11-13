@@ -1,0 +1,24 @@
+# Dependências
+node_modules/
+
+# Ambiente / segredos
+.env
+
+# Arquivos de dados gerados em execução (não versionar para evitar vazar dados reais)
+backend/users.json
+backend/requests.json
+backend/id-seq.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# SO / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Builds/Cache ocasionais
+/dist/
+/.cache/

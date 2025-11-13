@@ -1,0 +1,150 @@
+:root {
+  /* App palette */
+  --primary: #1a3a52;
+  --primary-light: #2d5a7a;
+  --accent: #ff6b35;
+  --accent-light: #ff8555;
+  --bg-light: #f7f9fb;
+  --bg-white: #ffffff;
+  --text-primary: #1c2a36;
+  --text-secondary: #546572;
+  --border: #e6edf3;
+
+  /* Map to Bootstrap variables (for components) */
+  --bs-primary: var(--primary);
+  --bs-secondary: var(--primary-light);
+  --bs-danger: var(--accent);
+  --bs-warning: var(--accent-light);
+}
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+.btn-primary:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.btn-danger {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+.btn-danger:hover {
+  background-color: var(--accent-light);
+  border-color: var(--accent-light);
+}
+
+* {box-sizing: border-box}
+body{font-family: 'Poppins', Arial, sans-serif;background:var(--bg-light);color:var(--text-primary);margin:0;line-height:1.6}
+
+/* Header */
+.site-header{background:#fff;border-bottom:1px solid #eee}
+.site-header .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:18px;min-height:84px}
+.logo{font-weight:700;color:var(--primary);font-size:22px}
+.logo-img{height:80px;width:auto;display:block;object-fit:contain}
+.main-nav{margin-left:auto;display:flex;gap:18px}
+.main-nav a{color:var(--text-primary);text-decoration:none;font-weight:600;transition:color 0.3s}
+.main-nav a:hover{color:var(--accent)}
+.top-btn{background:#ec6308;color:#fff;padding:10px 14px;border-radius:24px;text-decoration:none;font-weight:700}
+.top-btn:hover{background:#ff6b35}
+
+
+/* Hero */
+.hero{background:var(--primary);color:#fff;padding:80px 0}
+.hero-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:40px;padding:0 16px}
+.hero-content{flex:1}
+.hero-content h1{font-size:36px;line-height:1.05;margin-bottom:12px;font-weight:700}
+.hero-content p{opacity:0.95;margin-bottom:18px;font-size:16px}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 26px;border-radius:40px;text-decoration:none;font-weight:700;transition:all 0.3s}
+.btn-green{background:var(--accent);color:#fff;border:4px solid rgba(255,255,255,0.12);}
+.btn-green:hover{background:var(--accent-light);transform:translateY(-2px);box-shadow:0 6px 16px rgba(255,107,53,0.3)}
+.btn-orange{background:var(--accent);color:#fff}
+.btn-orange:hover{background:var(--accent-light);transform:translateY(-2px)}
+@media (max-width:768px){.hero-inner{flex-direction:column;text-align:center}}
+
+
+/* Brands */
+.brands{max-width:1200px;margin:32px auto;padding:0 16px;text-align:center}
+.brands h3{color:var(--primary);font-weight:700;letter-spacing:2px;margin-bottom:12px}
+.brand-list{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.brand-item{background:var(--bg-white);padding:20px 36px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);font-weight:700;color:var(--primary);transition:box-shadow 0.3s;display:flex;align-items:center;justify-content:center;min-height:80px}
+.brand-item:hover{box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.brand-logo{max-height:50px;max-width:120px;width:auto;height:auto;object-fit:contain}
+
+/* Services grid */
+.services-section{max-width:1200px;margin:32px auto;padding:0 16px;text-align:center}
+.services-section h2{color:var(--primary);font-weight:700;margin-bottom:8px}
+.services-section .lead{color:var(--text-secondary);margin-bottom:18px}
+.services-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:18px}
+.service-card{background:var(--bg-white);padding:20px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);text-align:left;transition:transform 0.3s,box-shadow 0.3s;border-left:4px solid var(--accent)}
+.service-card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,0.12)}
+.service-card h3{margin:0 0 8px;color:var(--primary);font-weight:700}
+.service-card p{margin:0;color:var(--text-secondary);font-size:14px}
+.service-card .service-icon{font-size:28px;margin-bottom:8px;display:inline-block}
+
+/* Care section */
+.care-section{max-width:1200px;margin:40px auto;padding:0 16px}
+.care-card{background:linear-gradient(135deg, var(--primary), var(--primary-light));padding:40px;text-align:center;border-radius:12px;margin-bottom:32px;color:#fff}
+.care-card h2{color:#fff;font-weight:700;font-size:32px;margin-bottom:24px}
+.care-images{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:32px}
+.care-images img{width:100%;height:250px;object-fit:cover;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.care-cta{text-align:center}
+@media (max-width:768px){.care-images{grid-template-columns:repeat(2,1fr)}}
+
+
+/* FAQ section */
+.faq{max-width:900px;margin:40px auto;padding:0 16px;width:100%}
+.faq h2{color:var(--primary);font-weight:700;text-align:center;margin-bottom:24px}
+.faq-list{background:var(--bg-white);border-radius:12px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.faq-item{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.faq-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.faq-item h3{color:var(--primary);font-size:18px;font-weight:700;margin-bottom:8px}
+.faq-item p{color:var(--text-secondary);margin:0;line-height:1.6}
+
+/* Whatsapp float */
+.whatsapp-float{position:fixed;right:18px;bottom:18px;background:linear-gradient(180deg,var(--accent),#e65100);color:#fff;padding:14px;border-radius:50%;text-decoration:none;font-size:20px;box-shadow:0 6px 18px rgba(255,107,53,0.3);transition:transform 0.3s,box-shadow 0.3s}
+.whatsapp-float:hover{transform:scale(1.1);box-shadow:0 8px 24px rgba(255,107,53,0.4)}
+
+/* Footer */
+.site-footer{background:var(--primary);color:#fff;border-top:1px solid var(--border);padding:18px 0;margin-top:40px}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 16px}
+.footer-inner a{color:var(--accent);text-decoration:none;font-weight:600;transition:color 0.3s}
+.footer-inner a:hover{color:var(--accent-light)}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{flex-direction:column;text-align:center}
+  .hero-image{width:100%;height:200px}
+  .main-nav{display:none}
+}
+
+/* Result helper (form feedback) */
+#result{margin-top:1.5rem;padding:1rem;border-radius:4px;display:none}
+#result.success{display:block;background-color:#d4edda;color:#155724;border:1px solid #c3e6cb;animation:slideIn 0.3s ease}
+#result.error{display:block;background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb;animation:slideIn 0.3s ease}
+
+/* Invalid field highlighting */
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: #dc3545;
+  border-width: 2px;
+  background-color: #fff5f5;
+}
+.form-control.is-invalid:focus, .form-select.is-invalid:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+}
+
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Aux spacing for brand field */
+#outraMarcaContainer{margin-top:0.5rem;padding-left:1rem;margin-bottom:1rem}
+
+@media (max-width:768px){
+  header h1{font-size:2rem}
+  header nav a{display:block;margin:0.5rem 0}
+  .hero-ctas{flex-direction:column}
+  .hero-content h1{font-size:28px}
+}
+
