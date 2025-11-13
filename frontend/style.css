@@ -46,6 +46,7 @@ body{font-family: 'Poppins', Arial, sans-serif;background:var(--bg-light);color:
 .main-nav{margin-left:auto;display:flex;gap:18px}
 .main-nav a{color:var(--text-primary);text-decoration:none;font-weight:600;transition:color 0.3s}
 .main-nav a:hover{color:var(--accent)}
+.main-nav a.active{color:var(--accent);border-bottom:2px solid var(--accent)}
 .top-btn{background:#ec6308;color:#fff;padding:10px 14px;border-radius:24px;text-decoration:none;font-weight:700}
 .top-btn:hover{background:#ff6b35}
 
@@ -113,19 +114,19 @@ body{font-family: 'Poppins', Arial, sans-serif;background:var(--bg-light);color:
 .footer-inner a{color:var(--accent);text-decoration:none;font-weight:600;transition:color 0.3s}
 .footer-inner a:hover{color:var(--accent-light)}
 
-/* Responsive */
+/* Responsividade */
 @media (max-width:900px){
   .hero-inner{flex-direction:column;text-align:center}
   .hero-image{width:100%;height:200px}
   .main-nav{display:none}
 }
 
-/* Result helper (form feedback) */
+/* Feedback do forms */
 #result{margin-top:1.5rem;padding:1rem;border-radius:4px;display:none}
 #result.success{display:block;background-color:#d4edda;color:#155724;border:1px solid #c3e6cb;animation:slideIn 0.3s ease}
 #result.error{display:block;background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb;animation:slideIn 0.3s ease}
 
-/* Invalid field highlighting */
+/* Destacar campos inválidos */
 .form-control.is-invalid, .form-select.is-invalid {
   border-color: #dc3545;
   border-width: 2px;
@@ -138,13 +139,47 @@ body{font-family: 'Poppins', Arial, sans-serif;background:var(--bg-light);color:
 
 @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
 
-/* Aux spacing for brand field */
+/* Auxiliar espaçamento para o campo de marca */
 #outraMarcaContainer{margin-top:0.5rem;padding-left:1rem;margin-bottom:1rem}
+
+/* Estilos da página Sobre */
+.about-hero {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+}
+
+.about-hero .hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-image-placeholder {
+  transition: all 0.3s ease;
+}
+
+.about-image-placeholder:hover {
+  background-color: #f8f9fa !important;
+  border-color: var(--accent) !important;
+}
 
 @media (max-width:768px){
   header h1{font-size:2rem}
   header nav a{display:block;margin:0.5rem 0}
   .hero-ctas{flex-direction:column}
   .hero-content h1{font-size:28px}
+  .about-hero .hero-content h1 {
+    font-size: 2rem;
+  }
+  .hero-subtitle {
+    font-size: 1rem;
+  }
 }
 
