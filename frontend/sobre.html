@@ -15,12 +15,13 @@
             <div class="logo">
                 <img src="images/LOGO.png" alt="Edmilson Técnico" class="logo-img">
             </div>
-            <nav class="main-nav">
+            <nav id="mainNav" class="main-nav" role="navigation" aria-label="Menu principal">
                 <a href="index.html">Início</a>
                 <a href="sobre.html" class="active">Sobre Mim</a>
                 <a href="dashboard.html">Painel do Técnico</a>
             </nav>
             <a class="top-btn" href="form.html">Orçamento Gratúito</a>
+            <button id="navToggle" class="nav-toggle" aria-label="Abrir menu" aria-controls="mainNav" aria-expanded="false">☰</button>
         </div>
     </header>
 
@@ -142,7 +143,7 @@
                 <a href="form.html" class="btn btn-lg" style="background-color: #ff6b35; border-color: #ff6b35; color: white;">
                     <i class="bi bi-calendar-plus"></i> Solicitar Orçamento
                 </a>
-                <a href="https://wa.me/5583999386915" class="btn btn-outline-success btn-lg" target="_blank">
+                <a href="https://wa.me/999386915?text=Olá%20Edmilson,%20vim%20pelo%20site%20e%20gostaria%20de%20agendar%20um%20orçamento" class="btn btn-outline-success btn-lg" target="_blank">
                     <i class="bi bi-whatsapp"></i> WhatsApp
                 </a>
             </div>
@@ -150,5 +151,6 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
 </body>
 </html>

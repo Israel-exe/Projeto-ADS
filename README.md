@@ -131,9 +131,7 @@ Se 'backend/users.json' não existir, o servidor cria automaticamente:
 ### Login Local
 - Usuários armazenados em `backend/users.json`
 - Senhas hasheadas com bcrypt (salt rounds: 10)
-- Sessão armazenada em memória (MemoryStore) — usar Redis/DB em produção
-
-### Google Identity Services
+- Sessão armazenada em memória (MemoryStore) ## Google Identity Services
 - Fluxo: usuário autentica no Google → frontend recebe `id_token` → backend verifica token com `google-auth-library` → cria sessão
 
 ### Proteção de Rotas
