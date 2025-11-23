@@ -1,94 +1,97 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+const { sql } = require('@vercel/postgres');
 const bcrypt = require('bcryptjs');
-
-const DB_PATH = path.join(__dirname, 'database.db');
-const db = new Database(DB_PATH);
-
-// Habilitar chaves estrangeiras e otimizações
-db.pragma('foreign_keys = ON');
-db.pragma('journal_mode = WAL');
 
 // ==================== SCHEMA ====================
 
-function initDatabase() {
-  // Tabela de usuários
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      name TEXT NOT NULL,
-      password_hash TEXT NOT NULL,
-      created_at TEXT DEFAULT (datetime('now'))
-    )
-  `);
+async function initDatabase() {
+  try {
+    // Tabela de usuários
+    await sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
 
-  // Tabela de solicitações
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS requests (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      phone TEXT NOT NULL,
-      email TEXT,
-      address TEXT NOT NULL,
-      brand TEXT NOT NULL,
-      model TEXT,
-      problem TEXT NOT NULL,
-      preferred_time TEXT,
-      status TEXT DEFAULT 'new',
-      created_at TEXT DEFAULT (datetime('now')),
-      updated_at TEXT,
-      completed_at TEXT
-    )
-  `);
+    // Tabela de solicitações
+    await sql`
+      CREATE TABLE IF NOT EXISTS requests (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT,
+        address TEXT NOT NULL,
+        brand TEXT NOT NULL,
+        model TEXT,
+        problem TEXT NOT NULL,
+        preferred_time TEXT,
+        status TEXT DEFAULT 'new',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP,
+        completed_at TIMESTAMP
+      )
+    `;
 
-  console.log('✅ Banco de dados inicializado');
+    console.log('✅ Banco de dados inicializado');
 
-  // Criar usuário admin padrão se não existir
-  createDefaultUser();
+    // Criar usuário admin padrão se não existir
+    await createDefaultUser();
+  } catch (error) {
+    console.error('❌ Erro ao inicializar banco:', error);
+    throw error;
+  }
 }
 
 // ==================== USERS ====================
 
-function createDefaultUser() {
-  const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
-  const result = stmt.get();
-  
-  if (result.count === 0) {
-    const password = 'admin123';
-    const hash = bcrypt.hashSync(password, 10);
+async function createDefaultUser() {
+  try {
+    const result = await sql`SELECT COUNT(*) as count FROM users`;
     
-    const insert = db.prepare(
-      'INSERT INTO users (username, email, name, password_hash) VALUES (?, ?, ?, ?)'
-    );
-    
-    insert.run('admin', 'admin@local', 'Administrador', hash);
-    console.log('✅ Usuário padrão criado: username=admin password=admin123');
+    if (result.rows[0].count === '0') {
+      const password = 'admin123';
+      const hash = bcrypt.hashSync(password, 10);
+      
+      await sql`
+        INSERT INTO users (username, email, name, password_hash) 
+        VALUES (${'admin'}, ${'admin@local'}, ${'Administrador'}, ${hash})
+      `;
+      
+      console.log('✅ Usuário padrão criado: username=admin password=admin123');
+    }
+  } catch (error) {
+    console.error('⚠️ Erro ao criar usuário padrão:', error);
   }
 }
 
-function findUserByUsername(username) {
-  const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-  return stmt.get(username);
+async function findUserByUsername(username) {
+  const result = await sql`SELECT * FROM users WHERE username = ${username}`;
+  return result.rows[0] || null;
 }
 
-function findUserByEmail(email) {
-  const stmt = db.prepare('SELECT * FROM users WHERE email = ?');
-  return stmt.get(email);
+async function findUserByEmail(email) {
+  const result = await sql`SELECT * FROM users WHERE email = ${email}`;
+  return result.rows[0] || null;
 }
 
-function createUser(username, email, name, passwordHash) {
-  const stmt = db.prepare(
-    'INSERT INTO users (username, email, name, password_hash) VALUES (?, ?, ?, ?)'
-  );
-  const result = stmt.run(username, email, name, passwordHash);
-  return result.lastInsertRowid;
+async function createUser(username, email, name, passwordHash) {
+  const result = await sql`
+    INSERT INTO users (username, email, name, password_hash) 
+    VALUES (${username}, ${email}, ${name}, ${passwordHash})
+    RETURNING id
+  `;
+  return result.rows[0].id;
 }
 
-function getAllUsers() {
-  const stmt = db.prepare('SELECT id, username, email, name, created_at FROM users');
-  return stmt.all();
+async function getAllUsers() {
+  const result = await sql`
+    SELECT id, username, email, name, created_at FROM users
+  `;
+  return result.rows;
 }
 
 // ==================== REQUESTS ====================
@@ -113,41 +116,42 @@ function convertRequestToCamelCase(req) {
   };
 }
 
-function getAllRequests() {
-  const stmt = db.prepare('SELECT * FROM requests ORDER BY created_at DESC');
-  const rows = stmt.all();
-  return rows.map(convertRequestToCamelCase);
+async function getAllRequests() {
+  const result = await sql`
+    SELECT * FROM requests ORDER BY created_at DESC
+  `;
+  return result.rows.map(convertRequestToCamelCase);
 }
 
-function getRequestById(id) {
-  const stmt = db.prepare('SELECT * FROM requests WHERE id = ?');
-  const row = stmt.get(id);
-  return convertRequestToCamelCase(row);
+async function getRequestById(id) {
+  const result = await sql`
+    SELECT * FROM requests WHERE id = ${id}
+  `;
+  return convertRequestToCamelCase(result.rows[0]);
 }
 
-function createRequest(data) {
-  const stmt = db.prepare(`
+async function createRequest(data) {
+  const result = await sql`
     INSERT INTO requests 
     (name, phone, email, address, brand, model, problem, preferred_time, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+    VALUES (
+      ${data.name},
+      ${data.phone},
+      ${data.email || null},
+      ${data.address},
+      ${data.brand},
+      ${data.model || null},
+      ${data.problem},
+      ${data.preferred_time || null},
+      ${data.status || 'new'}
+    )
+    RETURNING id
+  `;
   
-  const result = stmt.run(
-    data.name,
-    data.phone,
-    data.email || null,
-    data.address,
-    data.brand,
-    data.model || null,
-    data.problem,
-    data.preferred_time || null,
-    data.status || 'new'
-  );
-  
-  return result.lastInsertRowid;
+  return result.rows[0].id;
 }
 
-function updateRequest(id, data) {
+async function updateRequest(id, data) {
   // Mapeamento de campos recebidos para colunas do banco
   const fieldMap = {
     name: 'name',
@@ -160,50 +164,52 @@ function updateRequest(id, data) {
     preferredTime: 'preferred_time'
   };
 
-  const sets = [];
-  const params = [];
+  const updates = [];
+  const values = [];
+  let paramIndex = 1;
 
   for (const [key, value] of Object.entries(data || {})) {
     const column = fieldMap[key];
     if (column) {
-      sets.push(`${column} = ?`);
-      params.push(value);
+      updates.push(`${column} = $${paramIndex}`);
+      values.push(value);
+      paramIndex++;
     }
   }
 
-  if (sets.length === 0) return false; // nada para atualizar
+  if (updates.length === 0) return false;
 
-  // Usa CURRENT_TIMESTAMP para evitar problemas de aspas em datetime('now')
-  sets.push('updated_at = CURRENT_TIMESTAMP');
-  params.push(id);
+  // Adiciona updated_at
+  updates.push(`updated_at = CURRENT_TIMESTAMP`);
+  values.push(id);
 
-  const sql = `UPDATE requests SET ${sets.join(', ')} WHERE id = ?`;
-  console.log('DEBUG updateRequest SQL =>', sql, 'PARAMS =>', params);
-  const stmt = db.prepare(sql);
-  const result = stmt.run(...params);
-  return result.changes > 0;
+  const query = `UPDATE requests SET ${updates.join(', ')} WHERE id = $${paramIndex}`;
+  
+  const result = await sql.query(query, values);
+  return result.rowCount > 0;
 }
 
-function deleteRequest(id) {
-  const stmt = db.prepare('DELETE FROM requests WHERE id = ?');
-  const result = stmt.run(id);
-  return result.changes > 0;
+async function deleteRequest(id) {
+  const result = await sql`
+    DELETE FROM requests WHERE id = ${id}
+  `;
+  return result.rowCount > 0;
 }
 
-function completeRequest(id) {
-  const stmt = db.prepare(`
+async function completeRequest(id) {
+  const result = await sql`
     UPDATE requests 
-    SET status = 'completed', completed_at = datetime('now'), updated_at = datetime('now')
-    WHERE id = ?
-  `);
-  const result = stmt.run(id);
-  return result.changes > 0;
+    SET status = 'completed', 
+        completed_at = CURRENT_TIMESTAMP, 
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = ${id}
+  `;
+  return result.rowCount > 0;
 }
 
 // ==================== EXPORTS ====================
 
 module.exports = {
-  db,
   initDatabase,
   // Users
   findUserByUsername,

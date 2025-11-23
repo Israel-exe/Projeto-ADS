@@ -17,9 +17,6 @@ if (!SESSION_SECRET || SESSION_SECRET.length < 32) {
   process.exit(1);
 }
 
-// Inicializar banco de dados
-db.initDatabase();
-
 const app = express();
 const corsOptions = {
   origin:  function (origin, callback) {
@@ -129,8 +126,8 @@ app.post('/api/requests', async (req, res) => {
       problem: req.body.problem || '',
       preferred_time: req.body.preferredTime || ''
     };
-    const id = db.createRequest(requestData);
-    const request = db.getRequestById(id);
+    const id = await db.createRequest(requestData);
+    const request = await db.getRequestById(id);
     console.log(`✅ Nova solicitação criada: ID ${id}`);
     res.status(201).json(request);
   } catch (error) {
@@ -142,7 +139,7 @@ app.post('/api/requests', async (req, res) => {
 // Buscar todas as solicitações
 app.get('/api/requests', requireAuth, async (req, res) => {
   try {
-    const requests = db.getAllRequests();
+    const requests = await db.getAllRequests();
     res.json(requests);
   } catch (error) {
     console.error("Erro ao ler solicitações:", error);
@@ -170,9 +167,9 @@ app.get('/api/requests', requireAuth, async (req, res) => {
 // Endpoint simples para concluir solicitação
 app.post('/api/requests/:id/complete', requireAuth, async (req, res) => {
   try {
-    const success = db.completeRequest(parseInt(req.params.id));
+    const success = await db.completeRequest(parseInt(req.params.id));
     if (!success) return res.status(404).json({ mensagem: 'Solicitação não encontrada' });
-    const request = db.getRequestById(parseInt(req.params.id));
+    const request = await db.getRequestById(parseInt(req.params.id));
     console.log(`✅ Solicitação ${request.id} marcada como concluída.`);
     res.json({ ok: true, request });
   } catch (err) {
@@ -184,9 +181,9 @@ app.post('/api/requests/:id/complete', requireAuth, async (req, res) => {
 // Técnico: editar solicitação (protegida)
 app.patch('/api/requests/:id', requireAuth, async (req, res) => {
   try {
-    const success = db.updateRequest(parseInt(req.params.id), req.body);
+    const success = await db.updateRequest(parseInt(req.params.id), req.body);
     if (!success) return res.status(404).json({ mensagem: 'Solicitação não encontrada' });
-    const request = db.getRequestById(parseInt(req.params.id));
+    const request = await db.getRequestById(parseInt(req.params.id));
     console.log(`✏️ Solicitação ${request.id} atualizada pelo técnico ${req.session.user.username}`);
     res.json({ ok: true, request });
   } catch (err) {
@@ -198,7 +195,7 @@ app.patch('/api/requests/:id', requireAuth, async (req, res) => {
 // Técnico: excluir uma solicitação (protegida)
 app.delete('/api/requests/:id', requireAuth, async (req, res) => {
   try {
-    const success = db.deleteRequest(parseInt(req.params.id));
+    const success = await db.deleteRequest(parseInt(req.params.id));
     if (!success) return res.status(404).json({ mensagem: 'Solicitação não encontrada' });
     console.log(`🗑️ Solicitação ${req.params.id} removida pelo técnico ${req.session.user.username}`);
     res.json({ ok: true });
@@ -214,7 +211,7 @@ app.post('/login', async (req, res) => {
   if (!username || !password) return res.status(400).json({ mensagem: 'Usuário e senha são obrigatórios' });
 
   try {
-    const user = db.findUserByUsername(username);
+    const user = await db.findUserByUsername(username);
     if (!user) return res.status(401).json({ mensagem: 'Credenciais inválidas' });
 
     const ok = bcrypt.compareSync(password, user.password_hash);
@@ -250,6 +247,21 @@ app.get('*', (req, res) => {
 });
 
 // INICIA O SERVIDOR
-app.listen(PORT, () => {
-  console.log(`✅ Servidor pronto para receber requisições em http://localhost:${PORT}`);
-});
+async function startServer() {
+  try {
+    // Inicializar banco de dados
+    await db.initDatabase();
+    
+    app.listen(PORT, () => {
+      console.log(`✅ Servidor pronto para receber requisições em http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Erro ao iniciar servidor:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
+
+// Export para Vercel
+module.exports = app;
