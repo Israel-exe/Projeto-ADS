@@ -1,6 +1,6 @@
 # Projeto Full-stack
 
-Sistema de gestão de solicitações de serviço técnico com autenticação dupla (local + Google) e painel administrativo protegido.
+Sistema de gestão de solicitações de serviço técnico com autenticação local segura e painel administrativo protegido.
 
 ## 📋 Índice
 - [Características](#características)
@@ -18,15 +18,16 @@ Sistema de gestão de solicitações de serviço técnico com autenticação dup
 - **Página inicial** (index.html): Hero section, serviços, FAQ accordion, botão flutuante WhatsApp
 - **Formulário de solicitação** (form.html): Validação client-side, campo marca com opção "Outra", registro de timestamp
 - **Painel do técnico** (dashboard.html): Listagem de solicitações com edição/exclusão via modal, envio de garantia
-- **Login** (login.html): Autenticação local (usuário/senha) + Google Identity Services
+- **Login** (login.html): Autenticação local segura (usuário/senha)
 - **Design responsivo**: Mobile-first, paleta customizada (azul #1a3a52 + laranja #ff6b35)
 - **Componentes reutilizáveis**: `api.js` (helper para chamadas fetch), modal, cards
 
 ### Back-end
 - **Node.js + Express**: Servidor REST com CORS
-- **Autenticação de sessão**: express-session com suporte a login local (bcrypt) e Google OAuth (id_token)
+- **Autenticação de sessão**: express-session com login local (bcrypt)
 - **CRUD completo de solicitações**: GET, POST, PATCH, DELETE protegidos por sessão
 - **Proteção de rotas**: Middleware `requireAuth` para painel e endpoints sensíveis
+- **Variáveis de ambiente**: dotenv para gestão segura de segredos
 - **Armazenamento**: Arquivos JSON (`requests.json`, `users.json`)
 
 
@@ -35,14 +36,14 @@ Sistema de gestão de solicitações de serviço técnico com autenticação dup
 **Front-end:**
 - HTML5, CSS3 (Flexbox/Grid), JavaScript (Vanilla)
 - Google Fonts (Poppins)
-- Google Identity Services (OAuth)
+- Bootstrap 5 (componentes)
 
 **Back-end:**
-- Node.js v22+
+- Node.js v18+
 - Express.js
+- dotenv (variáveis de ambiente)
 - express-session (gerenciamento de sessão)
 - bcryptjs (hash de senhas)
-- google-auth-library (verificação de id_token)
 - cors (políticas de acesso)
 
 ## 📁 Estrutura do Projeto
@@ -77,14 +78,28 @@ cd "Projeto Full-stack"
 npm install
 ```
 
-### 2. Configurar variáveis de ambiente (opcional)
+### 2. Configurar variáveis de ambiente
 
-Crie um arquivo `.env` na raiz ou defina no terminal:
+Crie um arquivo `.env` na raiz do projeto (ou copie de `.env.example`):
 
-```powershell
-$env:SESSION_SECRET = "sua-senha-secreta-forte"
-$env:GOOGLE_CLIENT_ID = "seu-google-client-id.apps.googleusercontent.com"
+```bash
+cp .env.example .env
 ```
+
+Edite o arquivo `.env` e configure:
+
+```env
+PORT=3000
+SESSION_SECRET=seu-segredo-gerado-aqui
+NODE_ENV=development
+```
+
+⚠️ **IMPORTANTE**: 
+- Gere um `SESSION_SECRET` seguro com: 
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+
 
 ### 3. Executar o servidor
 
@@ -121,9 +136,8 @@ Se 'backend/users.json' não existir, o servidor cria automaticamente:
 ### Autenticação
 
 | Método | Endpoint | Descrição |
-|--------|----------|-----------|
+|--------|----------|-----------||
 | POST | `/login` | Login local (username + password) |
-| POST | `/auth/google` | Login Google (id_token) |
 | POST | `/logout` | Encerra sessão |
 
 ## 🔐 Autenticação
@@ -131,8 +145,8 @@ Se 'backend/users.json' não existir, o servidor cria automaticamente:
 ### Login Local
 - Usuários armazenados em `backend/users.json`
 - Senhas hasheadas com bcrypt (salt rounds: 10)
-- Sessão armazenada em memória (MemoryStore) ## Google Identity Services
-- Fluxo: usuário autentica no Google → frontend recebe `id_token` → backend verifica token com `google-auth-library` → cria sessão
+- Sessão armazenada em memória (MemoryStore)
+- Cookies com `httpOnly`, `sameSite: strict` e `secure` em produção
 
 ### Proteção de Rotas
 - `/dashboard.html` redireciona para `/login.html` se não autenticado
@@ -162,7 +176,7 @@ Se 'backend/users.json' não existir, o servidor cria automaticamente:
 
 **login.html** — Autenticação
 - Formulário local (username + password)
-- Botão Google Sign-In (Google Identity Services) (permite qualquer e-mail logar - não configurado)
+- Validação e feedback visual de erros
 
 ### API Helper (`api.js`)
 

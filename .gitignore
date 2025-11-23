@@ -8,6 +8,9 @@ node_modules/
 backend/users.json
 backend/requests.json
 backend/id-seq.json
+backend/database.db
+backend/database.db-shm
+backend/database.db-wal
 
 # Logs
 *.log

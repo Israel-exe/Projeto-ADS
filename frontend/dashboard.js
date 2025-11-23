@@ -54,7 +54,8 @@ async function loadRequests() {
 
   document.querySelectorAll('.complete').forEach(btn => {
     btn.addEventListener('click', async (e) => {
-      const id = e.target.dataset.id;
+      const button = e.target.closest('button');
+      const id = button.dataset.id;
       const res = await fetch(`/api/requests/${id}/complete`, { method: 'POST' });
       if (!res.ok) return showToast('Falha ao concluir','danger');
       showToast('Solicitação concluída','success');
@@ -65,12 +66,13 @@ async function loadRequests() {
   // Handlers de edição
   document.querySelectorAll('.edit').forEach(btn => {
     btn.addEventListener('click', async (e) => {
-      const id = e.target.dataset.id;
+      const button = e.target.closest('button');
+      const id = button.dataset.id;
       // Carrega detalhes da solicitação do servidor
       try {
         const res = await fetch('/api/requests');
         const all = await res.json();
-        const item = all.find(x => x.id === id);
+        const item = all.find(x => String(x.id) === String(id));
         if (!item) return showToast('Solicitação não encontrada','danger');
         // Preenche o modal
         document.getElementById('editId').value = item.id;
@@ -93,7 +95,8 @@ async function loadRequests() {
   document.querySelectorAll('.delete').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       if (!confirm('Confirma exclusão desta solicitação?')) return;
-      const id = e.target.dataset.id;
+      const button = e.target.closest('button');
+      const id = button.dataset.id;
       try {
         const res = await fetch(`/api/requests/${id}`, { method: 'DELETE' });
         if (!res.ok) return showToast('Falha ao excluir','danger');
